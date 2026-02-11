@@ -1,19 +1,191 @@
-body { font-family: sans-serif; background: #f4f7f9; display: flex; justify-content: center; padding: 20px; margin: 0; }
-.form-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-h2 { text-align: center; margin-bottom: 20px; color: #333; }
-.form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
-label { font-weight: bold; margin-bottom: 5px; font-size: 0.85rem; color: #555; }
-input, select, textarea { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; outline: none; font-family: inherit; }
-input[readonly] { border-color: #eee; color: #666; cursor: not-allowed; }
-.form-row { display: flex; gap: 8px; }
-.flex-grow { flex: 1; }
-.input-small { width: 70px; }
-.primary-btn { background: #007bff; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
-.secondary-btn { background: #6c757d; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-.add-btn { width: 100%; background: #f8f9fa; color: #444; border: 1px dashed #ccc; padding: 10px; border-radius: 6px; cursor: pointer; margin-bottom: 5px; }
-.dynamic-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
-.remove-btn { background: none; color: #dc3545; border: none; font-size: 1.3rem; cursor: pointer; }
-.confirm-box { background: #fdfdfd; padding: 15px; border: 1px solid #eee; border-radius: 8px; line-height: 1.5; font-size: 0.95rem; }
-.conf-list { padding-left: 5px; color: #333; margin-bottom: 8px; }
-hr { border: 0; border-top: 1px solid #eee; margin: 10px 0; }
-#submitBtn { background: #28a745; }
+body {
+  font-family: 'Segoe UI', 'Noto Sans JP', sans-serif;
+  background: #f4f7f9;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  margin: 0;
+}
+
+.form-container {
+  background: #fff;
+  padding: 24px 20px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+  width: 100%;
+  max-width: 450px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #333;
+  font-weight: 700;
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+}
+
+.form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  font-size: 0.95rem;
+  color: #555;
+  letter-spacing: 0.01em;
+}
+
+/* スマホで白くするための設定 */
+input,
+select,
+textarea {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+  font-family: inherit;
+  background-color: #fff !important; /* 真っ白に固定 */
+  -webkit-appearance: none; /* iOSの影や形状を解除 */
+  appearance: none;
+  opacity: 1; /* iOSで暗くなるのを防止 */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #90caf9;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.07);
+}
+
+.readonly-field {
+  background-color: #f8f9fa !important;
+  color: #666;
+  border-color: #eee;
+}
+
+/* row, layout, buttons */
+.form-row {
+  display: flex;
+  gap: 8px;
+}
+
+.flex-grow {
+  flex: 1;
+}
+
+.input-small {
+  width: 70px;
+  min-width: 0;
+}
+
+.primary-btn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  transition: background 0.18s;
+}
+
+.primary-btn:hover,
+#submitBtn:hover {
+  background: #0056b3;
+}
+
+.secondary-btn {
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.18s;
+}
+
+.secondary-btn:hover {
+  background: #495057;
+}
+
+.add-btn {
+  width: 100%;
+  background: #f8f9fa;
+  color: #444;
+  border: 1px dashed #ccc;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 5px;
+  transition: border-color 0.15s;
+}
+
+.add-btn:hover {
+  border-color: #90caf9;
+}
+
+.dynamic-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+
+.remove-btn {
+  background: none;
+  color: #dc3545;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 3px 7px 3px 7px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.remove-btn:hover {
+  background: #fff0f1;
+  color: #a71d2a;
+}
+
+.confirm-box {
+  background: #fdfdfd;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  line-height: 1.6;
+  font-size: 0.98rem;
+  color: #444;
+}
+
+.conf-list {
+  padding-left: 8px;
+  color: #333;
+  margin-bottom: 8px;
+  font-size: 0.96em;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+  margin: 14px 0;
+}
+
+#submitBtn {
+  background: #28a745;
+  transition: background 0.18s;
+}
+
+#submitBtn:hover {
+  background: #1e7e34;
+}

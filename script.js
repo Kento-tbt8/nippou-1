@@ -102,6 +102,8 @@ function generateSummary() {
 // データの送信処理
 function submitData() {
     const btn = document.getElementById('submitBtn');
+    if (btn.disabled) return; // 二重送信防止
+
     btn.disabled = true;
     btn.innerText = '送信中...';
 
@@ -143,19 +145,26 @@ function submitData() {
 
     fetch(gasUrl, {
         method: 'POST',
-        mode: 'no-cors', // CORSエラー回避（ただしレスポンスは受け取れない）
+        mode: 'no-cors', 
         body: JSON.stringify(formData)
     })
     .then(() => {
-        // no-cors の場合、エラーがなければ成功とみなす
-        alert('日報の送信が完了しました！\nPDFは自動で保存されています。');
+        // 送信成功時
+        alert('日報の送信が完了しました！\nOKを押すとトーク画面に戻ります。');
         
-        // ★ LINEブラウザを閉じてトーク画面に戻る
+        // --- 強制的にLINEを閉じる処理 ---
+        
+        // 1. 標準的なLINEトークへ戻るURL
         window.location.href = "https://line.me/R/";
+        
+        // 2. 数秒待っても閉じない場合のバックアップ（自動でタブを閉じる）
+        setTimeout(() => {
+            window.open('about:blank', '_self').close();
+        }, 500);
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('送信中にエラーが発生しました。');
+        alert('送信中にエラーが発生しました。電波状況を確認してください。');
         btn.disabled = false;
         btn.innerText = '送信する';
     });

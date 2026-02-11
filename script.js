@@ -1,171 +1,177 @@
-// GASのウェブアプリURL（デプロイして発行されたURLに差し替えてください）
-const gasUrl = 'https://script.google.com/macros/s/AKfycbwCRpqqrB6nyhvy51wSG_MZhWyZ4thCC4fkN7xXSjNOwtv9Hgj2aPDUaWg_L0s2kgnr/exec';
+// GASのウェブアプリURL
+const gasUrl = 'https://script.google.com/macros/s/AKfycbwCE1go-bKHrz8C4ZLOm6591Ou-dSEaQt-A_02yfdY4mlMvBDVylwxv1GOnURv-7KH8/exec';
 
-let siteList = [];
-let materialList = [];
+let globalMaterialList = [];
+let siteMasterData = [];
 
-// ページ読み込み時の処理
-window.onload = async () => {
-    // 今日の日付をデフォルト設定
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('date').value = today;
+window.addEventListener('load', () => {
+    const now = new Date();
+    const y = now.getFullYear(), m = ("0"+(now.getMonth()+1)).slice(-2), d = ("0"+now.getDate()).slice(-2);
+    document.getElementById('date').value = `${y}-${m}-${d}`;
+    
+    fetchLists();
+    // 施工箇所3行をStep1のコンテナに作成
+    for(let i=0; i<3; i++) { 
+        createFixedRow('locationContainer', `箇所 ${i+1}`, 'loc-input'); 
+    }
+});
 
-    // GASからマスタデータを取得
+async function fetchLists() {
     try {
-        const response = await fetch(gasUrl);
-        const data = await response.json();
-        siteList = data.sites;
-        materialList = data.materials;
-        console.log('Data loaded:', data);
-    } catch (e) {
-        console.error('データ取得エラー:', e);
-        alert('現場リストの取得に失敗しました。');
-    }
-};
-
-// 現場選択時に他の情報を自動入力
-function updateSiteInfo() {
-    const siteName = document.getElementById('site').value;
-    const site = siteList.find(s => s.name === siteName);
-    if (site) {
-        document.getElementById('meetingPlace').value = site.location || '';
-        document.getElementById('salesStaff').value = site.staff || '';
-    }
+        const res = await fetch(gasUrl);
+        const data = await res.json();
+        siteMasterData = data.sites;
+        globalMaterialList = data.materials;
+        
+        const siteSelect = document.getElementById('site');
+        siteSelect.innerHTML = '<option value="" disabled selected>現場を選択</option>';
+        siteMasterData.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = opt.textContent = s.name;
+            siteSelect.appendChild(opt);
+        });
+        
+        addDynamicRow('materialContainer', 'mat-input');
+    } catch (e) { console.error('取得失敗'); }
 }
 
-// 行の追加（施工内容 / 材料）
-function addRow(containerId) {
+document.getElementById('site').addEventListener('change', (e) => {
+    const info = siteMasterData.find(s => s.name === e.target.value);
+    if (info) {
+        document.getElementById('meetingPlace').value = info.location || "未登録";
+        document.getElementById('salesStaff').value = info.staff || "未登録";
+    }
+});
+
+function createFixedRow(containerId, placeholder, inputClass) {
     const container = document.getElementById(containerId);
     const div = document.createElement('div');
     div.className = 'dynamic-row';
-
-    if (containerId === 'locationContainer') {
-        div.innerHTML = `
-            <input type="text" name="loc" placeholder="箇所" class="flex-grow">
-            <input type="text" name="locQty" placeholder="数量" style="width:80px;">
-            <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
-        `;
-    } else {
-        let options = materialList.map(m => `<option value="${m}">${m}</option>`).join('');
-        div.innerHTML = `
-            <select name="matName" class="flex-grow">
-                <option value="">材料を選択</option>
-                ${options}
-            </select>
-            <input type="text" name="matQty" placeholder="数量" style="width:80px;">
-            <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
-        `;
-    }
+    div.innerHTML = `<input type="text" class="${inputClass} flex-grow" placeholder="${placeholder}"><input type="text" style="width: 70px;" class="loc-qty" placeholder="数量">`;
     container.appendChild(div);
 }
 
-// ステップ切り替え
-function nextStep(step) {
-    if (step === 3) {
-        generateSummary();
-    }
-    document.querySelectorAll('.form-step').forEach(el => el.style.display = 'none');
-    document.getElementById(`step${step}`).style.display = 'block';
+function addDynamicRow(containerId, inputClass) {
+    const container = document.getElementById(containerId);
+    const div = document.createElement('div');
+    div.className = 'dynamic-row';
+    let options = '<option value="" disabled selected>材料を選択</option>';
+    globalMaterialList.forEach(m => { options += `<option value="${m}">${m}</option>`; });
+    div.innerHTML = `<select class="${inputClass} flex-grow">${options}</select><input type="text" style="width: 60px;" placeholder="数量"><button type="button" class="remove-btn">×</button>`;
+    container.appendChild(div);
+    div.querySelector('.remove-btn').onclick = () => {
+        if (container.querySelectorAll('.dynamic-row').length > 1) {
+            div.remove();
+            updateRemoveButtons(containerId);
+        }
+    };
+    updateRemoveButtons(containerId);
+}
+
+function updateRemoveButtons(containerId) {
+    const rows = document.getElementById(containerId).querySelectorAll('.dynamic-row');
+    rows.forEach(row => {
+        const btn = row.querySelector('.remove-btn');
+        if (btn) {
+            btn.disabled = (rows.length === 1);
+            btn.style.opacity = (rows.length === 1) ? "0.3" : "1";
+        }
+    });
+}
+
+const showStep = (s) => {
+    ['step1', 'step2', 'step3'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.style.display = 'none';
+    });
+    document.getElementById(`step${s}`).style.display = 'block';
     window.scrollTo(0, 0);
-}
+};
 
-// 確認画面の生成
-function generateSummary() {
-    const summary = document.getElementById('summary');
+// ★ Step1 → Step2 移動時のバリデーション
+document.getElementById('nextBtn1').onclick = () => {
+    // 基本項目のチェック
+    const fields = ['company', 'date', 'startTime', 'endTime', 'weather', 'site', 'memberCount', 'memberName'];
+    if (!fields.every(id => document.getElementById(id).value)) { 
+        alert('基本項目に未入力があります'); 
+        return; 
+    }
+
+    // 施工箇所のチェック（少なくとも1つ入力があるか）
+    const locInputs = document.querySelectorAll('.loc-input');
+    const hasLocInput = Array.from(locInputs).some(input => input.value.trim() !== "");
+    if (!hasLocInput) {
+        alert('施工箇所を少なくとも1つは入力してください。');
+        return; 
+    }
+
+    showStep(2);
+};
+
+// ★ Step2 → Step3 移動（材料は任意なのでチェックなし）
+document.getElementById('nextBtn2').onclick = () => {
     const getVal = (id) => document.getElementById(id).value;
+    document.getElementById('conf-company').innerText = getVal('company');
+    document.getElementById('conf-date').innerText = getVal('date');
+    document.getElementById('conf-weather').innerText = getVal('weather');
+    document.getElementById('conf-time').innerText = `${getVal('startTime')} 〜 ${getVal('endTime')}`;
+    document.getElementById('conf-site').innerText = getVal('site');
+    document.getElementById('conf-meetingPlace').innerText = getVal('meetingPlace');
+    document.getElementById('conf-salesStaff').innerText = getVal('salesStaff');
+    document.getElementById('conf-name').innerText = getVal('memberName');
+    document.getElementById('conf-count').innerText = getVal('memberCount');
+    document.getElementById('conf-notes').innerText = getVal('notes') || "なし";
+    
+    renderConfirmList('loc-input', 'conf-locations-list', '【施工箇所】');
+    renderConfirmList('mat-input', 'conf-materials-list', '【使用材料】');
+    showStep(3);
+};
 
-    let locHtml = '';
-    document.querySelectorAll('#locationContainer .dynamic-row').forEach(row => {
-        const loc = row.querySelector('[name="loc"]').value;
-        const qty = row.querySelector('[name="locQty"]').value;
-        if (loc) locHtml += `<li>${loc}: ${qty}</li>`;
+function renderConfirmList(inputClass, targetId, title) {
+    const container = document.getElementById(targetId);
+    container.innerHTML = `<strong>${title}</strong>`;
+    document.querySelectorAll(`.${inputClass}`).forEach(input => {
+        if (input.value) {
+            const div = document.createElement('div');
+            const qtyInput = input.nextElementSibling;
+            const qty = (qtyInput && qtyInput.value) ? qtyInput.value : 0;
+            div.innerText = `・${input.value} ： ${qty}`;
+            container.appendChild(div);
+        }
     });
-
-    let matHtml = '';
-    document.querySelectorAll('#materialContainer .dynamic-row').forEach(row => {
-        const mat = row.querySelector('[name="matName"]').value;
-        const qty = row.querySelector('[name="matQty"]').value;
-        if (mat) matHtml += `<li>${mat}: ${qty}</li>`;
-    });
-
-    summary.innerHTML = `
-        <p><strong>現場:</strong> ${getVal('site')}</p>
-        <p><strong>作業者:</strong> ${getVal('name')}</p>
-        <p><strong>時間:</strong> ${getVal('startTime')} ～ ${getVal('endTime')}</p>
-        <hr>
-        <p><strong>施工内容:</strong></p><ul>${locHtml || 'なし'}</ul>
-        <p><strong>使用材料:</strong></p><ul>${matHtml || 'なし'}</ul>
-        <p><strong>備考:</strong><br>${getVal('notes') || 'なし'}</p>
-    `;
 }
 
-// データの送信処理
-function submitData() {
+document.getElementById('addMaterialBtn').onclick = () => addDynamicRow('materialContainer', 'mat-input');
+document.getElementById('backBtn1').onclick = () => showStep(1);
+document.getElementById('backBtn2').onclick = () => showStep(2);
+
+document.getElementById('reportForm').onsubmit = async function(e) {
+    e.preventDefault();
     const btn = document.getElementById('submitBtn');
-    if (btn.disabled) return; // 二重送信防止
-
-    btn.disabled = true;
-    btn.innerText = '送信中...';
-
-    const getVal = (id) => document.getElementById(id).value;
-
-    // 施工内容配列の作成
-    const locationArray = [];
-    document.querySelectorAll('#locationContainer .dynamic-row').forEach(row => {
-        locationArray.push({
-            loc: row.querySelector('[name="loc"]').value,
-            qty: row.querySelector('[name="locQty"]').value
-        });
-    });
-
-    // 材料配列の作成
-    const materialArray = [];
-    document.querySelectorAll('#materialContainer .dynamic-row').forEach(row => {
-        materialArray.push({
-            name: row.querySelector('[name="matName"]').value,
-            qty: row.querySelector('[name="matQty"]').value
-        });
-    });
-
-    const formData = {
-        date: getVal('date'),
-        company: getVal('company'),
-        weather: getVal('weather'),
-        site: getVal('site'),
-        meetingPlace: getVal('meetingPlace'),
-        salesStaff: getVal('salesStaff'),
-        startTime: getVal('startTime'),
-        endTime: getVal('endTime'),
-        count: getVal('count'),
-        name: getVal('name'),
-        notes: getVal('notes'),
-        locationArray: locationArray,
-        materialArray: materialArray
+    btn.disabled = true; btn.innerText = "送信中...";
+    
+    const locArray = Array.from(document.querySelectorAll('.loc-input')).map(v => ({
+        loc: v.value, qty: v.nextElementSibling.value || 0
+    })).filter(i => i.loc !== "");
+    
+    const matArray = Array.from(document.querySelectorAll('.mat-input')).map(v => ({
+        name: v.value, qty: v.nextElementSibling.value || 0
+    })).filter(i => i.name !== "");
+    
+    const payload = {
+        company: document.getElementById('company').value, date: document.getElementById('date').value,
+        startTime: document.getElementById('startTime').value, endTime: document.getElementById('endTime').value,
+        weather: document.getElementById('weather').value, site: document.getElementById('site').value,
+        meetingPlace: document.getElementById('meetingPlace').value, salesStaff: document.getElementById('salesStaff').value,
+        name: document.getElementById('memberName').value, count: document.getElementById('memberCount').value,
+        notes: document.getElementById('notes').value, locationArray: locArray, materialArray: matArray
     };
 
-    fetch(gasUrl, {
-        method: 'POST',
-        mode: 'no-cors', 
-        body: JSON.stringify(formData)
-    })
-    .then(() => {
-        // 送信成功時
+    try {
+        await fetch(gasUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
         alert('日報の送信が完了しました！\nOKを押すとトーク画面に戻ります。');
-        
-        // --- 強制的にLINEを閉じる処理 ---
-        
-        // 1. 標準的なLINEトークへ戻るURL
         window.location.href = "https://line.me/R/";
-        
-        // 2. 数秒待っても閉じない場合のバックアップ（自動でタブを閉じる）
-        setTimeout(() => {
-            window.open('about:blank', '_self').close();
-        }, 500);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('送信中にエラーが発生しました。電波状況を確認してください。');
-        btn.disabled = false;
-        btn.innerText = '送信する';
-    });
-}
+    } catch (e) { 
+        alert('送信失敗'); btn.disabled = false; btn.innerText = "送信する"; 
+    }
+};

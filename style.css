@@ -38,31 +38,34 @@ label {
     color: #555; 
 }
 
-/* 入力項目共通スタイル */
+/* ★ 入力項目共通スタイル（高さと余白を統一） */
 input, select, textarea { 
-    padding: 10px; 
+    padding: 12px 10px; /* 上下を少し広めに設定 */
     border: 1px solid #ddd; 
     border-radius: 6px; 
     font-size: 1rem; 
     outline: none; 
     background-color: #ffffff !important; 
-    -webkit-appearance: none; 
-    appearance: none;
-    font-weight: normal; /* 入力後の文字を標準の太さに */
+    box-sizing: border-box; /* paddingを含めた高さ計算にする */
+    width: 100%;
+    font-weight: normal; 
     color: #333;
 }
 
-/* ★プレースホルダー（備考欄など）の太さをスッキリさせる設定 */
+/* ★ 時間入力(time)と日付(date)がスマホで細くなるのを防ぐ */
+input[type="time"], 
+input[type="date"] {
+    min-height: 48px; /* 他の入力欄と高さを合わせる（スマホで押しやすいサイズ） */
+    -webkit-appearance: listbox; /* iOSでの表示を安定させる */
+    appearance: none;
+}
+
+/* プレースホルダーの設定 */
 ::placeholder {
     font-weight: normal !important;
     color: #999;
-    opacity: 1; /* ブラウザによる透過を防ぐ */
+    opacity: 1; 
 }
-
-/* iOS/Safari, IE/Edge 向けの個別指定 */
-::-webkit-input-placeholder { font-weight: normal !important; color: #999; }
-:-ms-input-placeholder { font-weight: normal !important; color: #999; }
-::-ms-input-placeholder { font-weight: normal !important; color: #999; }
 
 /* 自動入力項目の背景色 */
 .readonly-field { 
@@ -82,7 +85,7 @@ input, select, textarea {
 }
 
 .input-small { 
-    width: 70px; 
+    width: 80px; /* 人工の幅を少し調整 */
 }
 
 /* ボタンのスタイル */
@@ -90,7 +93,7 @@ input, select, textarea {
     background: #007bff; 
     color: white; 
     border: none; 
-    padding: 14px; 
+    padding: 16px; 
     border-radius: 8px; 
     font-weight: bold; 
     cursor: pointer; 
@@ -107,7 +110,7 @@ input, select, textarea {
     background: #6c757d; 
     color: white; 
     border: none; 
-    padding: 14px; 
+    padding: 16px; 
     border-radius: 8px; 
     font-weight: bold; 
     cursor: pointer; 
@@ -118,7 +121,7 @@ input, select, textarea {
     background: #f8f9fa; 
     color: #444; 
     border: 1px dashed #ccc; 
-    padding: 10px; 
+    padding: 12px; 
     border-radius: 6px; 
     cursor: pointer; 
     margin-bottom: 5px; 
@@ -129,22 +132,20 @@ input, select, textarea {
 .dynamic-row { 
     display: flex; 
     gap: 6px; 
-    margin-bottom: 6px; 
+    margin-bottom: 8px; 
     align-items: center; 
 }
 
-/* ★削除ボタンの制御 */
+/* 削除ボタンの制御 */
 .remove-btn { 
     background: none; 
     color: #dc3545; 
     border: none; 
-    font-size: 1.3rem; 
+    font-size: 1.5rem; 
     cursor: pointer; 
-    transition: color 0.2s; 
-    padding: 0 5px;
+    padding: 0 10px;
 }
 
-/* 1つの時は薄いグレーにして消せないことを表現 */
 .remove-btn:disabled { 
     color: #ccc; 
     cursor: not-allowed; 
@@ -160,32 +161,16 @@ input, select, textarea {
     font-size: 0.95rem; 
 }
 
-.confirm-box p {
-    margin: 8px 0;
-}
-
-.conf-list { 
-    padding-left: 5px; 
-    color: #333; 
-    margin-bottom: 12px; 
-}
-
 hr { 
     border: 0; 
     border-top: 1px solid #eee; 
     margin: 10px 0; 
 }
 
-/* 送信ボタンの特別色 */
 #submitBtn { 
     background: #28a745; 
 }
 
 #submitBtn:active {
     background: #1e7e34;
-}
-
-#submitBtn:disabled {
-    background: #6c757d;
-    cursor: not-allowed;
 }

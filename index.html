@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>現場報告フォーム</title>
+    <title>日報フォーム</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="form-container">
-    <h2>現場報告フォーム</h2>
+    <h2>日報フォーム</h2>
     <form id="reportForm">
         <div id="step1">
-            <div class="form-group"><label>会社名</label><input type="text" id="company" required></div>
+            <div class="form-group"><label>監督者名(記入者)</label><input type="text" id="company" required></div>
             <div class="form-group"><label>日付</label><input type="date" id="date" required></div>
             <div class="form-row">
                 <div class="form-group flex-grow"><label>開始時刻</label><input type="time" id="startTime" required></div>
@@ -42,7 +42,7 @@
 
             <div class="form-row">
                 <div class="form-group input-small"><label>人数</label><input type="number" id="memberCount" required></div>
-                <div class="form-group flex-grow"><label>報告者名</label><input type="text" id="memberName" required></div>
+                <div class="form-group flex-grow"><label>作業者名</label><input type="text" id="memberName" required></div>
             </div>
             <div class="form-group">
                 <label>施工内容（箇所） ※1つ目必須</label>
@@ -70,14 +70,14 @@
         <div id="step3" style="display: none;">
             <div class="confirm-box">
                 <h3 style="margin-top:0; text-align:center; color:#007bff;">入力内容の確認</h3>
-                <p><strong>会社名:</strong> <span id="conf-company"></span></p>
+                <p><strong>監督者名:</strong> <span id="conf-company"></span></p>
                 <p><strong>作業日:</strong> <span id="conf-date"></span></p>
                 <p><strong>時間・天気:</strong> <span id="conf-time-weather"></span></p>
                 <hr>
                 <p><strong>現場名:</strong> <span id="conf-site"></span></p>
                 <p><strong>集合場所:</strong> <span id="conf-meetingPlace"></span></p>
                 <p><strong>営業担当:</strong> <span id="conf-salesStaff"></span></p>
-                <p><strong>報告者:</strong> <span id="conf-name"></span> (<span id="conf-count"></span>名)</p>
+                <p><strong>作業者名:</strong> <span id="conf-name"></span> (<span id="conf-count"></span>名)</p>
                 <hr>
                 <p><strong>【施工内容】</strong></p>
                 <div id="conf-locations-list" class="conf-list"></div>

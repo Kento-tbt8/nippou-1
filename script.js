@@ -170,7 +170,7 @@ document.getElementById('reportForm').onsubmit = async function(e) {
     try {
         await fetch(gasUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
         alert('日報の送信が完了しました！\nOKを押すとトーク画面に戻ります。');
-        window.location.href = "https://line.me/R/";
+        window.location.href = "https://s.lmes.jp/landing-qr/2008206389-v2GmkqBg?uLand=jHRWfS";
     } catch (e) { 
         alert('送信失敗'); btn.disabled = false; btn.innerText = "送信する"; 
     }

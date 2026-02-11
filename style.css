@@ -40,24 +40,37 @@ label {
 
 /* ★ 入力項目共通スタイル（高さと余白を統一） */
 input, select, textarea { 
-    padding: 12px 10px; /* 上下を少し広めに設定 */
+    padding: 12px 10px; /* 上下余白 */
     border: 1px solid #ddd; 
     border-radius: 6px; 
     font-size: 1rem; 
+    line-height: 1.5; /* ★ 行の高さを指定して安定させる */
     outline: none; 
     background-color: #ffffff !important; 
-    box-sizing: border-box; /* paddingを含めた高さ計算にする */
+    box-sizing: border-box; 
     width: 100%;
     font-weight: normal; 
     color: #333;
+    /* iOS Safariでのデフォルトスタイルを徹底的に排除 */
+    -webkit-appearance: none;
+    appearance: none;
 }
 
-/* ★ 時間入力(time)と日付(date)がスマホで細くなるのを防ぐ */
+/* ★ スマホで細くなる時刻・日付入力を強制的に高くする */
 input[type="time"], 
 input[type="date"] {
-    min-height: 48px; /* 他の入力欄と高さを合わせる（スマホで押しやすいサイズ） */
-    -webkit-appearance: listbox; /* iOSでの表示を安定させる */
-    appearance: none;
+    min-height: 50px; /* ★ 他の項目（12px padding × 2 + line-height）と合わせる */
+    display: flex;
+    align-items: center;
+}
+
+/* セレクトボックスの右側矢印が消える場合の対策（必要に応じて） */
+select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 1em;
+    padding-right: 30px;
 }
 
 /* プレースホルダーの設定 */
@@ -85,7 +98,7 @@ input[type="date"] {
 }
 
 .input-small { 
-    width: 80px; /* 人工の幅を少し調整 */
+    width: 80px; 
 }
 
 /* ボタンのスタイル */
@@ -99,21 +112,10 @@ input[type="date"] {
     cursor: pointer; 
     width: 100%; 
     font-size: 1rem;
-    transition: background 0.2s;
 }
 
 .primary-btn:active {
     background: #0056b3;
-}
-
-.secondary-btn { 
-    background: #6c757d; 
-    color: white; 
-    border: none; 
-    padding: 16px; 
-    border-radius: 8px; 
-    font-weight: bold; 
-    cursor: pointer; 
 }
 
 .add-btn { 
@@ -125,10 +127,9 @@ input[type="date"] {
     border-radius: 6px; 
     cursor: pointer; 
     margin-bottom: 5px; 
-    font-size: 0.9rem;
 }
 
-/* 動的な追加行（材料・施工内容） */
+/* 動的な追加行 */
 .dynamic-row { 
     display: flex; 
     gap: 6px; 
@@ -136,7 +137,6 @@ input[type="date"] {
     align-items: center; 
 }
 
-/* 削除ボタンの制御 */
 .remove-btn { 
     background: none; 
     color: #dc3545; 
@@ -144,21 +144,6 @@ input[type="date"] {
     font-size: 1.5rem; 
     cursor: pointer; 
     padding: 0 10px;
-}
-
-.remove-btn:disabled { 
-    color: #ccc; 
-    cursor: not-allowed; 
-}
-
-/* 確認ボックス（Step3） */
-.confirm-box { 
-    background: #fdfdfd; 
-    padding: 15px; 
-    border: 1px solid #eee; 
-    border-radius: 8px; 
-    line-height: 1.6; 
-    font-size: 0.95rem; 
 }
 
 hr { 
@@ -169,8 +154,4 @@ hr {
 
 #submitBtn { 
     background: #28a745; 
-}
-
-#submitBtn:active {
-    background: #1e7e34;
 }

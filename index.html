@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>現場報告フォーム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="form-container">
+    <h2>現場報告フォーム</h2>
+    <form id="reportForm">
+        <div id="step1">
+            <div class="form-group"><label>会社名</label><input type="text" id="company" required></div>
+            <div class="form-group"><label>日付</label><input type="date" id="date" required></div>
+            <div class="form-row">
+                <div class="form-group flex-grow"><label>開始時刻</label><input type="time" id="startTime" required></div>
+                <div class="form-group flex-grow"><label>終了時刻</label><input type="time" id="endTime" required></div>
+            </div>
+            <div class="form-group">
+                <label>天気</label>
+                <select id="weather" required>
+                    <option value="" disabled selected>選択してください</option>
+                    <option value="晴れ">晴れ</option>
+                    <option value="曇り">曇り</option>
+                    <option value="雨">雨</option>
+                    <option value="雪">雪</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>現場名</label>
+                <select id="site" required><option value="">読込中...</option></select>
+            </div>
+            <div class="form-group">
+                <label>集合場所 (自動入力)</label>
+                <input type="text" id="meetingPlace" readonly style="background-color: #f8f9fa;">
+            </div>
+            <div class="form-group">
+                <label>営業担当者 (自動入力)</label>
+                <input type="text" id="salesStaff" readonly style="background-color: #f8f9fa;">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group input-small"><label>人数</label><input type="number" id="memberCount" required></div>
+                <div class="form-group flex-grow"><label>報告者名</label><input type="text" id="memberName" required></div>
+            </div>
+            <div class="form-group">
+                <label>施工内容（箇所） ※1つ目必須</label>
+                <div id="locationContainer"></div>
+            </div>
+            <div class="form-group">
+                <label>備考 ※任意</label>
+                <textarea id="notes" rows="2" placeholder="連絡事項があれば入力"></textarea>
+            </div>
+            <button type="button" id="nextBtn1" class="primary-btn">次へ（材料入力）</button>
+        </div>
+
+        <div id="step2" style="display: none;">
+            <div class="form-group">
+                <label>使用材料（任意）</label>
+                <div id="materialContainer"></div>
+                <button type="button" id="addMaterialBtn" class="add-btn">＋ 材料を追加</button>
+            </div>
+            <div class="form-row" style="margin-top: 25px;">
+                <button type="button" id="backBtn1" class="secondary-btn">戻る</button>
+                <button type="button" id="nextBtn2" class="primary-btn flex-grow">内容確認へ</button>
+            </div>
+        </div>
+
+        <div id="step3" style="display: none;">
+            <div class="confirm-box">
+                <h3 style="margin-top:0; text-align:center; color:#007bff;">入力内容の確認</h3>
+                <p><strong>会社名:</strong> <span id="conf-company"></span></p>
+                <p><strong>作業日:</strong> <span id="conf-date"></span></p>
+                <p><strong>時間・天気:</strong> <span id="conf-time-weather"></span></p>
+                <hr>
+                <p><strong>現場名:</strong> <span id="conf-site"></span></p>
+                <p><strong>集合場所:</strong> <span id="conf-meetingPlace"></span></p>
+                <p><strong>営業担当:</strong> <span id="conf-salesStaff"></span></p>
+                <p><strong>報告者:</strong> <span id="conf-name"></span> (<span id="conf-count"></span>名)</p>
+                <hr>
+                <p><strong>【施工内容】</strong></p>
+                <div id="conf-locations-list" class="conf-list"></div>
+                <p><strong>【備考】</strong></p>
+                <div id="conf-notes" class="conf-list" style="white-space: pre-wrap;"></div>
+                <hr>
+                <p><strong>【使用材料】</strong></p>
+                <div id="conf-materials-list" class="conf-list"></div>
+            </div>
+            <div class="form-row" style="margin-top: 20px;">
+                <button type="button" id="backBtn2" class="secondary-btn">修正する</button>
+                <button type="submit" id="submitBtn" class="primary-btn flex-grow">この内容で送信する</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
